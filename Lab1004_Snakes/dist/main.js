@@ -14,15 +14,30 @@ function init() {
         game.env.push(new Snake({
             headPosition: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
             radius: 50,
-            amountOfSegments: 50,
+            amountOfSegments: 100,
             colorPattern: [
-                Color.hex("0x586BA4"),
-                Color.hex("0x324376"),
-                Color.hex("0xF5DD90"),
-                Color.hex("0xF68E5F"),
-                Color.hex("0xF76C5E"),
+                Color.hex("03071e"),
+                Color.hex("370617"),
+                Color.hex("6a040f"),
+                Color.hex("9d0208"),
+                Color.hex("d00000"),
+                Color.hex("dc2f02"),
+                Color.hex("e85d04"),
+                Color.hex("f48c06"),
+                Color.hex("faa307"),
+                Color.hex("ffba08"),
+                //Color.hex("ffba08"),
+                Color.hex("faa307"),
+                Color.hex("f48c06"),
+                Color.hex("e85d04"),
+                Color.hex("dc2f02"),
+                Color.hex("d00000"),
+                Color.hex("9d0208"),
+                Color.hex("6a040f"),
+                Color.hex("370617"),
+                //Color.hex("03071e"),
             ],
-            speed: 5,
+            speed: 15,
         }));
     }
     game.time = Date.now();
@@ -38,13 +53,13 @@ function animate(game) {
     ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
     const n = 10;
     for (let i = 0; i < n; ++i) {
-        for (const mover of game.env) {
-            mover.update(dt / n, game.env);
-            mover.applyBehaviors(game.env, game.canvas.width, game.canvas.height);
+        for (const system of game.env) {
+            system.update(dt / n, game.env);
         }
     }
-    for (const mover of game.env) {
-        mover.render(game.canvas);
+    for (const system of game.env) {
+        system.render(game.canvas);
+        system.applyBehaviors(game.env, game.canvas.width, game.canvas.height);
     }
     requestAnimationFrame(() => animate(game));
 }
