@@ -1,3 +1,6 @@
 # TS
 */src/**/*.ts
 */tsconfig.json
+
+# npm
+*/package-lock.json
