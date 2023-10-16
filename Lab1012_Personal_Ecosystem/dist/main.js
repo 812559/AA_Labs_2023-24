@@ -12,11 +12,11 @@ function init() {
     };
     resizeCanvas(game.canvas);
     game.env.push(new ParticleGenerator({
-        newParticle: () => new Plant({
+        newParticle: (pos) => new Plant({
             radius: 10,
             lifeSpan: 5,
             hpGiven: 1,
-            position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
+            position: pos,
             velocity: Vec2D.fromAngle(Math.random() * TAU, 100),
             color: Color.GREEN,
         }),

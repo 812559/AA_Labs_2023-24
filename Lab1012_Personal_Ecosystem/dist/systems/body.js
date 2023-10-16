@@ -1,6 +1,7 @@
+import System from "../system.js";
 import Vec2D from "../vec2d.js";
 import { mod, TAU, Color } from "../utils.js";
-export default class Body {
+export default class Body extends System {
     position;
     velocity;
     acceleration;
@@ -9,6 +10,7 @@ export default class Body {
     onWallCollision;
     color;
     constructor(params) {
+        super();
         this.radius = params.radius;
         this.mass = params.mass ?? Math.PI * this.radius ** 2;
         this.position = params.position ?? new Vec2D();
