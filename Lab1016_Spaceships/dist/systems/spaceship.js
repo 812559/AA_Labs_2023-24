@@ -39,21 +39,22 @@ export default class SpaceShip extends Body {
         ctx.fillStyle = this.color.toString();
         ctx.translate(this.position.x, this.position.y);
         ctx.rotate(this.velocity.angle());
+        ctx.scale(this.radius, this.radius);
         // Ship
         ctx.beginPath();
-        ctx.moveTo(this.radius * SpaceShip.shipPoints[0].x, this.radius * SpaceShip.shipPoints[0].y);
+        ctx.moveTo(SpaceShip.shipPoints[0].x, SpaceShip.shipPoints[0].y);
         for (const point of SpaceShip.shipPoints)
-            ctx.lineTo(this.radius * point.x, this.radius * point.y);
+            ctx.lineTo(point.x, point.y);
         ctx.fill();
         // Flame
         ctx.fillStyle = "#cf352e";
         ctx.beginPath();
-        ctx.moveTo(this.radius * SpaceShip.flamePoints[0].x, this.radius * SpaceShip.flamePoints[0].y);
+        ctx.moveTo(SpaceShip.flamePoints[0].x, SpaceShip.flamePoints[0].y);
         for (const point of SpaceShip.flamePoints) {
             const scale = point.x + point.y == -5 / 3
                 ? 1 + Math.random()
                 : 1;
-            ctx.lineTo(this.radius * point.x * scale, this.radius * point.y);
+            ctx.lineTo(point.x * scale, point.y);
         }
         ctx.fill();
         ctx.translate(-this.position.x, -this.position.y);

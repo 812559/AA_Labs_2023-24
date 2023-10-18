@@ -1,6 +1,6 @@
 import Planet from "./systems/planet.js";
 import SpaceShip from "./systems/spaceship.js";
-import { resizeCanvas } from "./utils.js";
+import { Color, resizeCanvas } from "./utils.js";
 import Vec2D from "./vec2d.js";
 window.addEventListener("load", init);
 function init() {
@@ -14,12 +14,16 @@ function init() {
     const randPos = () => new Vec2D(game.canvas.width * Math.random(), game.canvas.height * Math.random());
     game.env.push(new Planet({
         position: center,
-        radius: 50,
+        radius: 70,
+        onWallCollision: "modulus",
+        color: Color.hex("e0bd88"),
     }));
     game.env.push(new SpaceShip({
         position: randPos(),
-        radius: 20,
+        radius: 35,
         velocity: Vec2D.fromAngle(0, 25),
+        onWallCollision: "modulus",
+        color: Color.hex("#1f4277"),
     }));
     game.time = Date.now();
     console.log(game);

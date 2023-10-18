@@ -38,7 +38,9 @@ export class Color {
     static hex(hexcode) {
         // Simple string to number, then bitshift (that I totally understand)
         // https://stackoverflow.com/a/21648508
-        let code = parseInt(hexcode, 16);
+        let code = typeof hexcode === "string"
+            ? parseInt(hexcode.replace("#", "0x"), 16)
+            : Math.floor(hexcode);
         return new Color((code >> 16) & 255, (code >> 8) & 255, code & 255, 1);
     }
     static RED = new Color(255, 0, 0);

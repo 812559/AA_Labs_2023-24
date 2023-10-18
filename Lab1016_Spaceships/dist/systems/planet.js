@@ -16,7 +16,7 @@ export default class Planet extends Body {
                     this.position = new Vec2D(Math.random() * envWidth, Math.random() * envHeight);
                 }
                 else if (dist <= distanceToRepell) {
-                    newVel = newVel.add(ss.velocity).limit(SpaceShip.maxVel * 2 / 3);
+                    newVel = newVel.add(this.position.sub(ss.position)).limit(SpaceShip.maxVel * 2 / 3);
                 }
             }
         }
