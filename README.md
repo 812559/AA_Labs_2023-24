@@ -18,3 +18,4 @@ There are two options to run it
 2. VS Code\
 Launch VS Code, quick open `ctrl+p`, and paste `ext install ritwickdey.LiveServer`
 Then, use `alt+l` `alt+o` to launch the server, and `alt+l` `alt+c` to stop the server
+
