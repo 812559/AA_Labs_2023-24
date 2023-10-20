@@ -49,40 +49,30 @@ export default class Particle extends Body {
         const ctx = canvas.getContext("2d");
         if (!ctx)
             return;
+        let points;
         switch (this.renderStyle) {
             case "circle":
                 super.render(canvas);
-                break;
+                return;
             case "square":
-                ctx.save();
-                ctx.translate(this.position.x, this.position.y);
-                ctx.rotate(this.velocity.angle());
-                ctx.scale(this.radius, this.radius);
-                ctx.fillStyle = this.color.toString();
-                ctx.beginPath();
-                ctx.moveTo(Particle.squarePoints[0].x, Particle.squarePoints[0].y);
-                for (const point of Particle.squarePoints)
-                    ctx.lineTo(point.x, point.y);
-                ctx.closePath();
-                ctx.fill();
-                ctx.translate(-this.position.x, -this.position.y);
-                ctx.restore();
+                points = Particle.squarePoints;
                 break;
             case "triangle":
-                ctx.save();
-                ctx.translate(this.position.x, this.position.y);
-                ctx.rotate(this.velocity.angle());
-                ctx.scale(this.radius, this.radius);
-                ctx.fillStyle = this.color.toString();
-                ctx.beginPath();
-                ctx.moveTo(Particle.trianglePoints[0].x, Particle.trianglePoints[0].y);
-                for (const point of Particle.trianglePoints)
-                    ctx.lineTo(point.x, point.y);
-                ctx.closePath();
-                ctx.fill();
-                ctx.translate(-this.position.x, -this.position.y);
-                ctx.restore();
+                points = Particle.trianglePoints;
                 break;
         }
+        ctx.save();
+        ctx.translate(this.position.x, this.position.y);
+        ctx.rotate(this.velocity.angle());
+        ctx.scale(this.radius, this.radius);
+        ctx.fillStyle = this.color.toString();
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (const point of points)
+            ctx.lineTo(point.x, point.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.translate(-this.position.x, -this.position.y);
+        ctx.restore();
     }
 }
