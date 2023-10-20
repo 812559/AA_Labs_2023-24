@@ -19,6 +19,7 @@ function init() {
             position: pos,
             velocity: Vec2D.fromAngle(Math.random() * TAU, 100),
             color: Color.GREEN,
+            renderStyle: "random",
         }),
         position: new Vec2D(game.canvas.width / 2, game.canvas.height / 2),
         radius: 20,
