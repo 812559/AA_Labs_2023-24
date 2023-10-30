@@ -1,6 +1,7 @@
 import { Color, TAU, resizeCanvas, $ } from "./utils.js";
 import Vec2D from "./vec2d.js";
 import Body from "./systems/body.js";
+import Snake from "./systems/snake.js";
 window.addEventListener("load", init);
 function init() {
     const worldScale = 8;
@@ -55,6 +56,34 @@ function init() {
             velocity: Vec2D.fromAngle(Math.random() * TAU, Math.random() * 25),
             color: Color.random(),
         }));
+    game.env.push(new Snake({
+        headPosition: center,
+        radius: 50,
+        amountOfSegments: 100,
+        colorPattern: [
+            Color.hex("03071e"),
+            Color.hex("370617"),
+            Color.hex("6a040f"),
+            Color.hex("9d0208"),
+            Color.hex("d00000"),
+            Color.hex("dc2f02"),
+            Color.hex("e85d04"),
+            Color.hex("f48c06"),
+            Color.hex("faa307"),
+            Color.hex("ffba08"),
+            //Color.hex("ffba08"),
+            Color.hex("faa307"),
+            Color.hex("f48c06"),
+            Color.hex("e85d04"),
+            Color.hex("dc2f02"),
+            Color.hex("d00000"),
+            Color.hex("9d0208"),
+            Color.hex("6a040f"),
+            Color.hex("370617"),
+            //Color.hex("03071e"),
+        ],
+        speed: 15,
+    }));
     game.time = Date.now();
     console.log(game);
     animate(game);
