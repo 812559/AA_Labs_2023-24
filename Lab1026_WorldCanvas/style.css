@@ -9,8 +9,12 @@ body {
 }
 
 #main {
+    position: relative;
+
     width: 100vw;
     height: 100vh;
+
+    z-index: 1;
 }
 
 #mini {
@@ -20,4 +24,6 @@ body {
 
     width: 25%;
     height: 25%;
+
+    z-index: 2;
 }

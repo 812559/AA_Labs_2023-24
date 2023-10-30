@@ -1,6 +1,6 @@
 import System from "../system.js";
 import Vec2D from "../vec2d.js";
-import { mod, TAU, Color } from "../utils.js";
+import { mod, Color } from "../utils.js";
 export default class Body extends System {
     position;
     velocity;
@@ -19,7 +19,7 @@ export default class Body extends System {
         this.onWallCollision = params.onWallCollision ?? "bounce";
         this.color = params.color ?? new Color();
     }
-    update(deltaTime, environment, envWidth, envHeight, newAcceleration) {
+    update(deltaTime, environment, world, newAcceleration) {
         const newAcc = newAcceleration ?? new Vec2D();
         this.position = this.position
             .add(this.velocity.mult(deltaTime))
@@ -46,48 +46,54 @@ export default class Body extends System {
         }
         return f.div(this.mass);
     }
-    applyBehaviors(environment, deltaTime, envWidth, envHeight) {
+    applyBehaviors(environment, deltaTime, world) {
         if (this.onWallCollision === "modulus") {
             this.position = this.position
-                .setX((x) => mod(x, envWidth))
-                .setY((y) => mod(y, envHeight));
+                .setX((x) => mod(x, world.w))
+                .setY((y) => mod(y, world.h));
             return;
         }
         if (this.position.x - this.radius < 0) {
             this.position = this.position.setX((x) => this.radius);
             this.velocity = this.velocity.setX((x) => -x);
         }
-        else if (this.position.x + this.radius > envWidth) {
-            this.position = this.position.setX((x) => envWidth - this.radius);
+        else if (this.position.x + this.radius > world.w) {
+            this.position = this.position.setX((x) => world.w - this.radius);
             this.velocity = this.velocity.setX((x) => -x);
         }
         if (this.position.y - this.radius < 0) {
             this.position = this.position.setY((y) => this.radius);
             this.velocity = this.velocity.setY((y) => -y);
         }
-        else if (this.position.y + this.radius > envHeight) {
-            this.position = this.position.setY((y) => envHeight - this.radius);
+        else if (this.position.y + this.radius > world.h) {
+            this.position = this.position.setY((y) => world.h - this.radius);
             this.velocity = this.velocity.setY((y) => -y);
         }
     }
-    render(main, mini) {
-        // Minimap
-        mini.context.save();
-        mini.context.fillStyle = this.color.toString();
-        mini.context.scale(mini.dimensions.w / main.dimensions.w, mini.dimensions.h / main.dimensions.h);
-        mini.context.translate(this.position.x, this.position.y);
-        mini.context.beginPath();
-        mini.context.arc(0, 0, this.radius, 0, TAU);
-        mini.context.fill();
-        mini.context.restore();
-        // Regular
-        main.context.save();
-        main.context.fillStyle = this.color.toString();
-        main.context.scale(main.dimensions.w / mini.dimensions.w, main.dimensions.h / mini.dimensions.h);
-        main.context.translate(-mini.dimensions.x, -mini.dimensions.y);
-        main.context.beginPath();
-        main.context.arc(this.position.x, this.position.y, this.radius, 0, TAU);
-        main.context.fill();
-        main.context.restore();
+    render(cnv, world, renderArea) {
+        // const miniCtx = cnv.mini.getContext("2d")!;
+        // const mainCtx = cnv.main.getContext("2d")!;
+        // miniCtx.save();
+        //     miniCtx.fillStyle = this.color.toString();
+        //     miniCtx.scale(
+        //         cnv.mini.width / world.w,
+        //         cnv.mini.height / world.h,
+        //     );
+        //     miniCtx.translate(this.position.x, this.position.y);
+        //     miniCtx.beginPath();
+        //         miniCtx.arc(0, 0, this.radius, 0, TAU);
+        //     miniCtx.fill();
+        // miniCtx.restore();
+        // mainCtx.save();
+        //     mainCtx.fillStyle = this.color.toString();
+        //     mainCtx.translate(
+        //         this.position.x - renderArea.x,
+        //         this.position.y - renderArea.y
+        //     );
+        //     mainCtx.beginPath();
+        //         mainCtx.arc(0, 0, this.radius, 0, TAU);
+        //     mainCtx.fill();
+        // mainCtx.restore();
+        System.renderCircle(this.position, this.color, this.radius, cnv, world, renderArea);
     }
 }

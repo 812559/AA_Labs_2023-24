@@ -7,6 +7,7 @@ export function resizeCanvas(canvas) {
 export function mod(a, b) {
     return a - b * Math.floor(a / b);
 }
+export const $ = (query) => document.querySelector(query);
 export const TAU = Math.PI * 2;
 export class Color {
     r;
@@ -18,6 +19,9 @@ export class Color {
         this.g = g ?? 0;
         this.b = b ?? 0;
         this.a = a ?? 1;
+    }
+    static random() {
+        return new Color(255 * Math.random(), 255 * Math.random(), 255 * Math.random());
     }
     /**
      * Create a color from an hsv value

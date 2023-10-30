@@ -1,61 +1,60 @@
-import { resizeCanvas } from "./utils.js";
+import { Color, TAU, resizeCanvas, $ } from "./utils.js";
 import Vec2D from "./vec2d.js";
 import Body from "./systems/body.js";
 window.addEventListener("load", init);
 function init() {
+    const worldScale = 8;
     const game = {
-        cnvMain: {
-            canvas: window.document.querySelector("#main"),
-            context: window.document
-                .querySelector("#main")
-                .getContext("2d"),
-            dimensions: { x: 0, y: 0, w: 0, h: 0 },
-        },
-        cnvMini: {
-            canvas: window.document.querySelector("#mini"),
-            context: window.document
-                .querySelector("#mini")
-                .getContext("2d"),
-            dimensions: { x: 0, y: 0, w: 0, h: 0 },
-        },
         time: 0,
         env: new Array(),
+        cnv: { main: $("#main"), mini: $("#mini") },
+        world: {
+            x: 0,
+            y: 0,
+            w: window.innerWidth * worldScale,
+            h: window.innerHeight * worldScale,
+        },
+        renderArea: {
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0, // Changed later
+        },
     };
-    resizeCanvas(game.cnvMain.canvas);
-    game.cnvMain.dimensions.w = game.cnvMain.canvas.width;
-    game.cnvMain.dimensions.h = game.cnvMain.canvas.height;
-    resizeCanvas(game.cnvMini.canvas);
-    game.cnvMini.dimensions.w = game.cnvMini.canvas.width;
-    game.cnvMini.dimensions.h = game.cnvMini.canvas.height;
+    resizeCanvas(game.cnv.main);
+    resizeCanvas(game.cnv.mini);
+    game.renderArea.w = $("#main").width;
+    game.renderArea.h = $("#main").height;
     window.addEventListener("keydown", (event) => {
-        console.log(game.cnvMini.dimensions);
-        const dX = (game.cnvMain.dimensions.w - game.cnvMini.dimensions.w) / 5;
-        const dY = (game.cnvMain.dimensions.h - game.cnvMini.dimensions.h) / 5;
+        const dx = (game.world.w - game.renderArea.w) / 10;
+        const dy = (game.world.h - game.renderArea.h) / 10;
         switch (event.key) {
             case "ArrowDown":
-                game.cnvMini.dimensions.y = Math.min(game.cnvMain.dimensions.h - game.cnvMini.dimensions.h, game.cnvMini.dimensions.y + dY);
+                game.renderArea.y = Math.min(game.world.h - game.renderArea.h, game.renderArea.y + dy);
                 break;
             case "ArrowUp":
-                game.cnvMini.dimensions.y = Math.max(0, game.cnvMini.dimensions.y - dY);
+                game.renderArea.y = Math.max(0, game.renderArea.y - dy);
                 break;
             case "ArrowLeft":
-                game.cnvMini.dimensions.x = Math.max(0, game.cnvMini.dimensions.x - dX);
+                game.renderArea.x = Math.max(0, game.renderArea.x - dx);
                 break;
             case "ArrowRight":
-                game.cnvMini.dimensions.x = Math.min(game.cnvMain.dimensions.w - game.cnvMini.dimensions.w, game.cnvMini.dimensions.x + dX);
+                game.renderArea.x = Math.min(game.world.w - game.renderArea.w, game.renderArea.x + dx);
                 break;
             default:
-                return;
+                break;
         }
+        console.log(game.renderArea.y, game.renderArea.h, game.world.h);
     });
-    const center = new Vec2D(game.cnvMain.dimensions.w / 2, game.cnvMain.dimensions.h / 2);
-    const randPos = () => new Vec2D(game.cnvMain.dimensions.w * Math.random(), game.cnvMain.dimensions.h * Math.random());
-    // TODO: Add systems (bodies)
-    game.env.push(new Body({
-        radius: 30,
-        position: new Vec2D(0, 0),
-        velocity: center.div(10),
-    }));
+    const center = new Vec2D(game.world.w / 2, game.world.h / 2);
+    const randPos = () => Vec2D.random(game.world.w, game.world.h);
+    for (let i = 0; i < 1000; ++i)
+        game.env.push(new Body({
+            radius: 30,
+            position: randPos(),
+            velocity: Vec2D.fromAngle(Math.random() * TAU, Math.random() * 25),
+            color: Color.random(),
+        }));
     game.time = Date.now();
     console.log(game);
     animate(game);
@@ -64,43 +63,67 @@ function animate(game) {
     const currentTime = Date.now();
     const dt = (currentTime - game.time) * 1e-3; // Delta time bewteen last 'frame' in seconds
     game.time = currentTime;
-    renderAxisBox(game.cnvMain, game.cnvMini);
-    const subSteps = 10;
+    renderAxisBox(game);
+    const subSteps = 1;
     for (let i = 0; i < subSteps; ++i) {
         for (let j = 0; j < game.env.length; ++j) {
-            game.env[j].update(dt, game.env, game.cnvMain.dimensions.w, game.cnvMain.dimensions.h);
-            // This might be very bad for performance
+            game.env[j].update(dt / subSteps, game.env, game.world);
+            // This might be very bad for performance (depending on subSteps)
             // But better for realism
-            game.env[j].applyBehaviors(game.env, dt, game.cnvMain.dimensions.w, game.cnvMain.dimensions.h);
+            game.env[j].applyBehaviors(game.env, dt / subSteps, game.world);
         }
     }
     for (let i = 0; i < game.env.length; ++i) {
-        game.env[i].render(game.cnvMain, game.cnvMini);
+        game.env[i].render(game.cnv, game.world, game.renderArea);
     }
     requestAnimationFrame(() => animate(game));
 }
-function renderAxisBox(main, mini) {
-    mini.context.save();
-    mini.context.fillStyle = "white";
-    mini.context.strokeStyle = "black";
-    mini.context.rect(0, 0, mini.dimensions.w, mini.dimensions.h);
-    mini.context.fill();
-    mini.context.stroke();
-    mini.context.strokeStyle = "blue";
-    mini.context.scale(mini.dimensions.w / main.dimensions.w, mini.dimensions.h / main.dimensions.h);
-    mini.context.translate(mini.dimensions.x, mini.dimensions.y);
-    mini.context.beginPath();
-    mini.context.strokeRect(0, 0, mini.dimensions.w, mini.dimensions.h);
-    mini.context.stroke();
-    mini.context.restore();
-    main.context.save();
-    main.context.fillStyle = "white";
-    main.context.fillRect(0, 0, main.dimensions.w, main.dimensions.h);
-    main.context.fillStyle = "red";
-    main.context.scale(main.dimensions.w / mini.dimensions.w, main.dimensions.h / mini.dimensions.h);
-    main.context.translate(-mini.dimensions.x, -mini.dimensions.y);
-    main.context.beginPath();
-    main.context.moveTo;
-    main.context.fill();
-    main.context.restore();
+function renderAxisBox(game) {
+    const miniCtx = game.cnv.mini.getContext("2d");
+    const mainCtx = game.cnv.main.getContext("2d");
+    mainCtx.clearRect(0, 0, game.cnv.main.width, game.cnv.main.height);
+    miniCtx.clearRect(0, 0, game.cnv.mini.width, game.cnv.mini.height);
+    miniCtx.save();
+    // Outline
+    miniCtx.strokeStyle = "black";
+    miniCtx.fillStyle = "white";
+    miniCtx.lineWidth = 2;
+    miniCtx.beginPath();
+    miniCtx.rect(0, 0, game.cnv.mini.width, game.cnv.mini.height);
+    miniCtx.fill();
+    miniCtx.stroke();
+    // Display grid
+    miniCtx.lineWidth = 1;
+    miniCtx.beginPath();
+    miniCtx.moveTo(0, game.cnv.mini.height / 2);
+    miniCtx.lineTo(game.cnv.mini.width, game.cnv.mini.height / 2);
+    miniCtx.stroke();
+    miniCtx.beginPath();
+    miniCtx.moveTo(game.cnv.mini.width / 2, 0);
+    miniCtx.lineTo(game.cnv.mini.width / 2, game.cnv.mini.height);
+    miniCtx.stroke();
+    // Display reder area
+    miniCtx.strokeStyle = "blue";
+    miniCtx.lineWidth = 5;
+    miniCtx.scale(game.cnv.mini.width / game.world.w, game.cnv.mini.height / game.world.h);
+    miniCtx.translate(game.renderArea.x, game.renderArea.y);
+    miniCtx.beginPath();
+    miniCtx.rect(0, 0, game.renderArea.w, game.renderArea.h);
+    miniCtx.stroke();
+    miniCtx.restore();
+    mainCtx.save();
+    mainCtx.strokeStyle = "black";
+    mainCtx.lineWidth = 5;
+    const w2 = game.world.w / 2;
+    const h2 = game.world.h / 2;
+    mainCtx.translate(w2 - game.renderArea.x, h2 - game.renderArea.y);
+    mainCtx.beginPath();
+    mainCtx.moveTo(-w2, 0);
+    mainCtx.lineTo(w2, 0);
+    mainCtx.stroke();
+    mainCtx.beginPath();
+    mainCtx.moveTo(0, -h2);
+    mainCtx.lineTo(0, h2);
+    mainCtx.stroke();
+    mainCtx.restore();
 }

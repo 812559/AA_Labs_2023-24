@@ -17,6 +17,9 @@ export default class Vec2D {
     static fromAngle(theta, magnitude = 1) {
         return new Vec2D(magnitude * Math.cos(theta), magnitude * Math.sin(theta));
     }
+    static random(xRange, yRange) {
+        return new Vec2D(Math.random() * xRange, Math.random() * yRange);
+    }
     equals(other) {
         return this.x === other.x && this.y === other.y;
     }
