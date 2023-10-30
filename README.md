@@ -4,7 +4,7 @@ Advanced Animation Labs
 ## Usage
 ```
 git clone github.com/812559/AA_Labs_2023-24.git
-cd AA_Labs_2023-24/
+cd AA_Labs_2023-24/LabMMDD_Name/
 ```
 There are two options to run it
 1. NPM
