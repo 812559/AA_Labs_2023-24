@@ -1,6 +1,7 @@
 import System from "../system.js";
 import { Color, TAU } from "../utils.js";
 import Vec2D from "../vec2d.js";
+import Body from "./body.js";
 export default class Snake extends System {
     segments;
     radius;
@@ -31,7 +32,16 @@ export default class Snake extends System {
         this.segments[0] = this.segments[0].add(this.velocity.mult(deltaTime));
     }
     applyBehaviors(environment, deltaTime, world) {
-        // In future, maybe add segments
+        // Add a segment
+        for (let i = 0; i < environment.length; ++i) {
+            if (!(environment[i] instanceof Body))
+                continue;
+            if (this.segments[0].dist(environment[i].position) <=
+                this.radius + environment[i].radius) {
+                this.segments.push(this.segments[this.segments.length - 1].copy());
+                environment[i].removeFrom(environment);
+            }
+        }
         // Bounce off walls
         if (this.segments[0].x - this.radius < 0) {
             this.segments[0] = this.segments[0].setX((x) => this.radius);

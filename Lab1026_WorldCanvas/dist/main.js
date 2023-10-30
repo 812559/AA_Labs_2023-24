@@ -26,6 +26,7 @@ function init() {
     resizeCanvas(game.cnv.mini);
     game.renderArea.w = $("#main").width;
     game.renderArea.h = $("#main").height;
+    // Move render area
     window.addEventListener("keydown", (event) => {
         const dx = (game.world.w - game.renderArea.w) / 10;
         const dy = (game.world.h - game.renderArea.h) / 10;
@@ -45,7 +46,6 @@ function init() {
             default:
                 break;
         }
-        console.log(game.renderArea.y, game.renderArea.h, game.world.h);
     });
     const center = new Vec2D(game.world.w / 2, game.world.h / 2);
     const randPos = () => Vec2D.random(game.world.w, game.world.h);
@@ -61,26 +61,20 @@ function init() {
         radius: 50,
         amountOfSegments: 100,
         colorPattern: [
-            Color.hex("03071e"),
-            Color.hex("370617"),
-            Color.hex("6a040f"),
-            Color.hex("9d0208"),
-            Color.hex("d00000"),
-            Color.hex("dc2f02"),
-            Color.hex("e85d04"),
-            Color.hex("f48c06"),
-            Color.hex("faa307"),
-            Color.hex("ffba08"),
-            //Color.hex("ffba08"),
-            Color.hex("faa307"),
-            Color.hex("f48c06"),
-            Color.hex("e85d04"),
-            Color.hex("dc2f02"),
-            Color.hex("d00000"),
-            Color.hex("9d0208"),
-            Color.hex("6a040f"),
-            Color.hex("370617"),
-            //Color.hex("03071e"),
+            Color.hex("521F14"),
+            Color.hex("983118"),
+            Color.hex("D4A072"),
+            Color.hex("FAF2E6"),
+            Color.hex("C1DFF7"),
+            Color.hex("2B80BA"),
+            Color.hex("044269"),
+            Color.hex("001830"),
+            Color.hex("044269"),
+            Color.hex("2B80BA"),
+            Color.hex("C1DFF7"),
+            Color.hex("FAF2E6"),
+            Color.hex("D4A072"),
+            Color.hex("983118"),
         ],
         speed: 15,
     }));
