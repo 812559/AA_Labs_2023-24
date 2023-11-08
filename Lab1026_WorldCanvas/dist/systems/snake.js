@@ -62,8 +62,7 @@ export default class Snake extends System {
     }
     render(cnv, world, renderArea) {
         for (let i = this.segments.length - 1; i >= 0; --i) {
-            const segment = this.segments[i];
-            System.renderCircle(segment, this.colorPattern[i % this.colorPattern.length], this.radius, cnv, world, renderArea);
+            System.renderCircle(this.segments[i], this.colorPattern[i % this.colorPattern.length], this.radius, cnv, world, renderArea);
         }
     }
     get mass() {

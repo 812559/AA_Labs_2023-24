@@ -21,6 +21,8 @@ function init() {
             w: 0,
             h: 0, // Changed later
         },
+        mouse: new Vec2D(),
+        playing: true,
     };
     resizeCanvas(game.cnv.main);
     resizeCanvas(game.cnv.mini);
@@ -28,8 +30,8 @@ function init() {
     game.renderArea.h = $("#main").height;
     // Move render area
     window.addEventListener("keydown", (event) => {
-        const dx = (game.world.w - game.renderArea.w) / 10;
-        const dy = (game.world.h - game.renderArea.h) / 10;
+        const dx = (game.world.w - game.renderArea.w) / 20;
+        const dy = (game.world.h - game.renderArea.h) / 20;
         switch (event.key) {
             case "ArrowDown":
                 game.renderArea.y = Math.min(game.world.h - game.renderArea.h, game.renderArea.y + dy);
@@ -47,6 +49,12 @@ function init() {
                 break;
         }
     });
+    window.addEventListener("mousemove", (event) => {
+        game.mouse = new Vec2D(event.clientX, event.clientY);
+    });
+    window.addEventListener("mousedown", () => {
+        game.playing = !game.playing;
+    });
     const center = new Vec2D(game.world.w / 2, game.world.h / 2);
     const randPos = () => Vec2D.random(game.world.w, game.world.h);
     for (let i = 0; i < 1000; ++i)
@@ -58,7 +66,7 @@ function init() {
         }));
     game.env.push(new Snake({
         headPosition: center,
-        radius: 50,
+        radius: 75,
         amountOfSegments: 100,
         colorPattern: [
             Color.hex("521F14"),
@@ -76,7 +84,7 @@ function init() {
             Color.hex("D4A072"),
             Color.hex("983118"),
         ],
-        speed: 15,
+        speed: 25,
     }));
     game.time = Date.now();
     console.log(game);
@@ -87,13 +95,15 @@ function animate(game) {
     const dt = (currentTime - game.time) * 1e-3; // Delta time bewteen last 'frame' in seconds
     game.time = currentTime;
     renderAxisBox(game);
-    const subSteps = 1;
-    for (let i = 0; i < subSteps; ++i) {
-        for (let j = 0; j < game.env.length; ++j) {
-            game.env[j].update(dt / subSteps, game.env, game.world);
-            // This might be very bad for performance (depending on subSteps)
-            // But better for realism
-            game.env[j].applyBehaviors(game.env, dt / subSteps, game.world);
+    if (game.playing) {
+        const subSteps = 1;
+        for (let i = 0; i < subSteps; ++i) {
+            for (let j = 0; j < game.env.length; ++j) {
+                game.env[j].update(dt / subSteps, game.env, game.world);
+                // This might be very bad for performance (depending on subSteps)
+                // But better for realism
+                game.env[j].applyBehaviors(game.env, dt / subSteps, game.world);
+            }
         }
     }
     for (let i = 0; i < game.env.length; ++i) {
